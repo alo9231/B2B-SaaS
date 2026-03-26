@@ -15,7 +15,7 @@
 
 ## 🔗 프로젝트 링크
 
-* **Live Demo:** URL
+* **Live Demo:** (https://my-baas-project.vercel.app/)
 
 ---
 
