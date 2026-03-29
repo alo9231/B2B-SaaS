@@ -34,6 +34,11 @@
 - **Complex Filtering**: TypeScript의 엄격한 타입 정의를 통해 다중 조건 필터링 기능을 버그 없이 안정적으로 구현했습니다.
 - **UX Detail**: Skeleton UI와 부드러운 트랜지션을 적용하여 데이터 로딩 시의 사용자 이탈률을 최소화했습니다.
 
+#### ✅ 사용자 인증 및 데이터 검증 (Auth & Form Validation)
+- **Secure Auth**: Supabase Auth를 연동하여 소셜 로그인 및 이메일 기반의 안전한 인증 시스템을 구축했습니다.
+- **Robust Validation**: `React Hook Form`과 `Zod`를 결합하여 실시간 유효성 검사를 구현, 불필요한 서버 요청을 방지하고 사용자 입력 실수를 최소화했습니다.
+- **Interactive UX**: 폼 입력 에러 발생 시 GSAP를 활용한 마이크로 인터랙션을 적용하여 사용자에게 직관적인 피드백을 제공합니다.
+
 ---
 
 ### 🧠 기술적 고민 & 해결 (Problem Solving)
