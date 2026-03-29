@@ -56,23 +56,20 @@
 
 ---
 
-### 📂 폴더 구조 (Folder Structure)
+## 📂 Project Structure
+
 src/
- ├── app/                  # Next.js App Router (페이지 및 레이아웃)
- │    ├── (auth)/          # 인증 관련 라우트 그룹 (선택사항)
- │    │    ├── login/      # 로그인 페이지
- │    │    └── signup/     # 회원가입 페이지
- │    ├── dashboard/       # 대시보드 메인 레이아웃 및 페이지
- │    │    ├── layout.tsx  # 대시보드 공통 사이드바 & GSAP 애니메이션
- │    │    └── page.tsx    # 통계 및 환영 메시지 메인 화면
- │    ├── layout.tsx       # 루트 레이아웃 (Global CSS, Fonts)
- │    └── page.tsx         # 랜딩 페이지
- ├── components/           # 재사용 가능한 UI 컴포넌트
- │    ├── auth/            # SignUpForm, SignInForm 등 인증 컴포넌트
- │    ├── dashboard/       # KanbanBoard, Sidebar 등 대시보드 부품
- │    └── common/          # Button, Input 등 원자 단위 컴포넌트
- ├── lib/                  # 외부 라이브러리 설정 (Supabase Client 등)
- ├── store/                # Zustand 전역 상태 관리 (Task, User 등)
- ├── hooks/                # 비즈니스 로직 분리 (Custom Hooks)
- ├── types/                # TypeScript Interface & Type 정의
- └── middleware.ts         # 인증 보호 및 경로 리다이렉트 설정
+├── app/                  # Next.js App Router (페이지 및 레이아웃)
+│   ├── dashboard/        # 대시보드 페이지 (데이터 관리)
+│   │   └── page.tsx
+│   ├── login/            # 로그인 페이지
+│   │   └── page.tsx
+│   ├── layout.tsx        # 전체 공통 레이아웃
+│   └── page.tsx          # 메인 페이지 (인증 여부에 따른 리다이렉트)
+├── components/           # 재사용 가능한 UI 컴포넌트
+│   ├── auth/             # 인증 관련 컴포넌트 (SignInForm 등)
+│   └── ui/               # 공통 UI 요소 (Button, Input 등)
+├── lib/                  # 외부 라이브러리 설정
+│   └── supabase.ts       # Supabase Client 설정 및 초기화
+├── types/                # TypeScript 타입 정의 파일
+└── store/                # 상태 관리 (Zustand 등)
