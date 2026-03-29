@@ -28,7 +28,7 @@
 
 #### ✅ 실시간 데이터 동기화 (Real-time Sync)
 - **Server State Optimization**: TanStack Query를 활용하여 서버 데이터를 캐싱하고, Supabase Real-time을 연동하여 협업 중인 팀원의 변경사항을 즉각 반영합니다.
-- **Responsive Layout**: 6년의 퍼블리싱 내공을 녹여, 복잡한 대시보드 레이아웃을 모바일부턴 와이드 모니터까지 완벽하게 대응했습니다.
+- **Responsive Layout**: 복잡한 대시보드 레이아웃을 모바일부턴 와이드 모니터까지 완벽하게 대응했습니다.
 
 #### ✅ 데이터 시각화 & 필터링 (Data Visualization)
 - **Complex Filtering**: TypeScript의 엄격한 타입 정의를 통해 다중 조건 필터링 기능을 버그 없이 안정적으로 구현했습니다.
@@ -58,6 +58,7 @@
 
 ## 📂 Project Structure
 
+```text
 src/
 ├── app/                  # Next.js App Router (페이지 및 레이아웃)
 │   ├── dashboard/        # 대시보드 페이지 (데이터 관리)
