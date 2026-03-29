@@ -3,9 +3,6 @@
 > **실시간 협업 관리 솔루션**입니다.  
 > 단순한 기능 구현을 넘어, 데이터 안정성과 고성능 인터랙티브 UI 구현에 초점을 맞췄습니다.
 
-<div align="center">
-  <img src="https://capsule-render.vercel.app/render?type=waving&color=auto&height=200&section=header&text=TaskFlow&fontSize=90" />
-</div>
 
 ### 🔗 Project Links
 - **Live Demo**: [https://my-baas-project.vercel.app/](https://my-baas-project.vercel.app/)
