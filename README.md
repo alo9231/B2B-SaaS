@@ -28,7 +28,7 @@
 
 #### ✅ 실시간 데이터 동기화 (Real-time Sync)
 - **Server State Optimization**: TanStack Query를 활용하여 서버 데이터를 캐싱하고, Supabase Real-time을 연동하여 협업 중인 팀원의 변경사항을 즉각 반영합니다.
-- **Responsive Layout**: 6년의 퍼블리싱 내공을 녹여, 복잡한 대시보드 레이아웃을 모바일부턴 와이드 모니터까지 완벽하게 대응했습니다.
+- **Responsive Layout**: 복잡한 대시보드 레이아웃을 모바일부턴 와이드 모니터까지 완벽하게 대응했습니다.
 
 #### ✅ 데이터 시각화 & 필터링 (Data Visualization)
 - **Complex Filtering**: TypeScript의 엄격한 타입 정의를 통해 다중 조건 필터링 기능을 버그 없이 안정적으로 구현했습니다.
@@ -52,27 +52,25 @@
 - **Solution**: 브라우저 렌더링 파이프라인을 고려하여 **GSAP**로 애니메이션을 제어, 저사양 기기에서도 끊김 없는 사용자 경험을 제공하도록 최적화했습니다.
 
 #### 3. 컴포넌트 재사용성 및 확장성 (Atomic Design)
-- **Approach**: 공통 UI 컴포넌트를 분리하여 유지보수 비용을 절감하고, 일관된 디자인 시스템을 유지하도록 설계했습니다. 이는 퍼블리셔로서 지향해온 '관리 효율성'을 코드 수준으로 확장한 결과입니다.
+- **Approach**: 공통 UI 컴포넌트를 분리하여 유지보수 비용을 절감하고, 일관된 디자인 시스템을 유지하도록 설계했습니다. '관리 효율성'을 코드 수준으로 확장한 결과입니다.
 
 ---
 
-### 📂 폴더 구조 (Folder Structure)
+## 📂 Project Structure
+
+```text
 src/
- ├── app/                  # Next.js App Router (페이지 및 레이아웃)
- │    ├── (auth)/          # 인증 관련 라우트 그룹 (선택사항)
- │    │    ├── login/      # 로그인 페이지
- │    │    └── signup/     # 회원가입 페이지
- │    ├── dashboard/       # 대시보드 메인 레이아웃 및 페이지
- │    │    ├── layout.tsx  # 대시보드 공통 사이드바 & GSAP 애니메이션
- │    │    └── page.tsx    # 통계 및 환영 메시지 메인 화면
- │    ├── layout.tsx       # 루트 레이아웃 (Global CSS, Fonts)
- │    └── page.tsx         # 랜딩 페이지
- ├── components/           # 재사용 가능한 UI 컴포넌트
- │    ├── auth/            # SignUpForm, SignInForm 등 인증 컴포넌트
- │    ├── dashboard/       # KanbanBoard, Sidebar 등 대시보드 부품
- │    └── common/          # Button, Input 등 원자 단위 컴포넌트
- ├── lib/                  # 외부 라이브러리 설정 (Supabase Client 등)
- ├── store/                # Zustand 전역 상태 관리 (Task, User 등)
- ├── hooks/                # 비즈니스 로직 분리 (Custom Hooks)
- ├── types/                # TypeScript Interface & Type 정의
- └── middleware.ts         # 인증 보호 및 경로 리다이렉트 설정
+├── app/                  # Next.js App Router (페이지 및 레이아웃)
+│   ├── dashboard/        # 대시보드 페이지 (데이터 관리)
+│   │   └── page.tsx
+│   ├── login/            # 로그인 페이지
+│   │   └── page.tsx
+│   ├── layout.tsx        # 전체 공통 레이아웃
+│   └── page.tsx          # 메인 페이지 (인증 여부에 따른 리다이렉트)
+├── components/           # 재사용 가능한 UI 컴포넌트
+│   ├── auth/             # 인증 관련 컴포넌트 (SignInForm 등)
+│   └── ui/               # 공통 UI 요소 (Button, Input 등)
+├── lib/                  # 외부 라이브러리 설정
+│   └── supabase.ts       # Supabase Client 설정 및 초기화
+├── types/                # TypeScript 타입 정의 파일
+└── store/                # 상태 관리 (Zustand 등)
