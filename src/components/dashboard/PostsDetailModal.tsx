@@ -194,11 +194,10 @@ export default function PostsDetailModal() {
                                             className="group bg-gray-50 p-4 rounded-2xl border border-gray-100 shadow-sm relative overflow-hidden transition-all hover:bg-white hover:border-blue-100"
                                         >
                                         {/* 💡 이름표 추가 */}
-                                        <div className="flex items-center gap-2 mb-2">
-                                            <span className="text-[11px] font-black bg-indigo-100 text-indigo-600 px-2 py-0.5 rounded-full">
-                                                {c.user_email ? c.user_email.split('@')[0] : '익명'} 님
-                                            </span>                                           
-                                        </div>
+                                        <span className="text-[11px] font-black bg-indigo-100 text-indigo-600 px-2 py-0.5 rounded-full">
+                                            {/* 데이터가 오기 전엔 '작성자'라고 보여주다가, 오면 이메일로 교체 */}
+                                            {(c.user_email || '작성자').split('@')[0]} 님
+                                        </span>
                                         <p className="text-gray-700 text-sm pr-10 leading-relaxed">{c.content}</p> {/* 버튼과 겹치지 않게 pr-8 추가 */}
                                         <span className="text-[10px] text-gray-400 mt-2 block">
                                             {new Date(c.created_at).toLocaleString()}
