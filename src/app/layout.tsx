@@ -1,7 +1,9 @@
+// src/app/layout.tsx
 import "./globals.css";
 import type { Metadata } from "next";
 import ReactQueryProvider from "@/components/providers/ReactQueryProvider";
 import Sidebar from '@/components/layout/Sidebar';
+import Header from "@/components/layout/Header";
 import { Toaster } from "react-hot-toast";
 
 export const metadata: Metadata = {
@@ -12,17 +14,20 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="ko">
-      <body className="flex"> {/* flex를 주어 사이드바와 콘텐츠를 나란히 배치 */}
+      <body className="flex h-screen w-full overflow-hidden"> {/* 전체 flex */}
         <ReactQueryProvider>
-          {/* 사이드바 배치 */}
+          {/* 1. 사이드바 (왼쪽 고정) */}
           <Sidebar /> 
           
-          {/* 메인 콘텐츠 영역 */}
-          <main className="flex-1 bg-gray-50 min-h-screen overflow-auto">
-            {children}
-          </main>
+          {/* 2. 오른쪽 영역 (헤더 + 콘텐츠 수직 배치) */}
+          <div className="flex-1 flex flex-col min-w-0">
+            <Header /> {/* 상단 헤더 */}
+            
+            <main className="flex-1 bg-gray-50 overflow-auto p-6">
+              {children} {/* 여기에 dashboard 페이지 내용이 들어옴 */}
+            </main>
+          </div>
 
-          {/* 알림 토스트를 위해 최상단에 배치 */}
           <Toaster position="top-right" />
         </ReactQueryProvider>
       </body>
