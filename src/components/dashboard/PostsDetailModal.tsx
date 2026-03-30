@@ -50,6 +50,7 @@ export default function PostsDetailModal() {
     });
 
     const isLoading = isLoadingPost || isLoadingComments;
+    
 
     // 2. 댓글 등록 기능
     const { mutate: addComment, isPending } = useMutation({
@@ -116,6 +117,20 @@ export default function PostsDetailModal() {
         }
     });
 
+    // 상태별 스타일 맵핑 객체 추가
+    const statusStyles: { [key: string]: string } = {
+        Pending: 'rounded-md bg-amber-50 text-amber-600 border-amber-200',  // 대기 (주황)
+        Active: 'rounded-md  bg-green-100 text-green-700 border-green-200', // 활성 (초록)
+        Closed: 'rounded-md bg-gray-50 text-gray-400 border-gray-200',       // 종료 (회색)
+    };
+
+    // 상태별 한글 이름 맵핑 객체 
+    const statusNames: { [key: string]: string } = {
+        Pending: '대기',
+        Active: '활성',
+        Closed: '종료',
+    };
+
     // 마운트 전이거나 선택된 ID가 없으면 아무것도 렌더링하지 않음
     if (!mounted || !selectedPostId) return null;
 
@@ -134,7 +149,20 @@ export default function PostsDetailModal() {
                 {/* 헤더 */}
                 <div className="p-6 border-b flex justify-between items-center bg-gray-50/50">
                     <h2 className="text-xl font-bold text-gray-800">
-                        {isLoading ? '로딩 중...' : postsDetail?.title || '상세 보기'}
+                        {/* 게시글 로딩 상태에 따라 제목 표시 */}
+                        {isLoadingPost ? (
+                            <span className="text-gray-400">로딩 중...</span>
+                        ) : (
+                            <>
+                                {postsDetail?.title || '상세 보기'}
+                                {/* 💡 댓글이 있을 때만 개수 표시 (예: (3)) */}
+                                {!isLoadingComments && commentsList && commentsList.length > 0 && (
+                                    <span className="text-lg font-medium text-indigo-500">
+                                        ({commentsList.length})
+                                    </span>
+                                )}
+                            </>
+                        )}
                     </h2>
                     <button onClick={closeModal} className="text-2xl text-gray-400 hover:text-gray-600 transition-colors">&times;</button>
                 </div>
@@ -150,8 +178,8 @@ export default function PostsDetailModal() {
                     ) : (
                         <>
                             <div className="mb-8">
-                                <span className="text-xs font-bold px-2 py-1 rounded bg-blue-100 text-blue-600 mb-2 inline-block">
-                                    {postsDetail.status}
+                                <span className={`text-[11px] font-bold px-2.5 py-0.5 rounded-full border mb-3 inline-block shadow-sm ${statusStyles[postsDetail.status] || statusStyles['Closed']}`}>
+                                    {statusNames[postsDetail.status] || postsDetail.status}
                                 </span>
                                 <p className="text-gray-600 leading-relaxed whitespace-pre-wrap text-lg">{postsDetail.content}</p>
                             </div>

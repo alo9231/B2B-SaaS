@@ -13,6 +13,7 @@ interface Post {
   title: string;
   created_at: string;
   status?: 'Active' | 'Pending' | 'Closed';
+  commentCount?: number; // 추가
 }
 
 export default function Home() {
@@ -46,7 +47,7 @@ export default function Home() {
   async function getPosts() {
     const { data, error } = await supabase
       .from('posts')
-      .select('*')
+      .select(`*, comments(id)`) // 댓글의 id 목록을 함께 가져옴
       .order('created_at', { ascending: false })
     
     if (error) {
@@ -55,7 +56,9 @@ export default function Home() {
       const statusOptions : ('Active' | 'Pending' | 'Closed')[] = ['Active', 'Pending', 'Closed'];
       const updatedData = data?.map((item: any) => ({
         ...item, 
-        status: item.status || statusOptions[item.id % 3] // DB에 상태가 없으면 배분
+        status: item.status || statusOptions[item.id % 3], // DB에 상태가 없으면 배분
+        // 💡 댓글 개수를 미리 계산해서 넣어줌
+        commentCount: item.comments ? item.comments.length : 0
       }))
       setPosts(updatedData || []);
     }
@@ -249,12 +252,23 @@ export default function Home() {
                                     </td>
                                     <td className="p-4 font-medium text-gray-700 group-hover:text-indigo-600 transition-all">
                                         {editingId === post.id ? (
-                                            <input type="text" value={editTitle} 
-                                                  onChange={(e) => setEditTitle(e.target.value)}
-                                                  className='border border-indigo-300 rounded p-1 w-full outline-none'
-                                                  onClick={(e) => e.stopPropagation()} 
+                                            <input type="text" 
+                                                   value={editTitle} 
+                                                   onChange={(e) => setEditTitle(e.target.value)}
+                                                   className='border border-indigo-300 rounded p-1 w-full outline-none'
+                                                   onClick={(e) => e.stopPropagation()} 
                                             />
-                                        ) : post.title}
+                                        ) : (
+                                          <>
+                                            <span className="truncate max-w-[200px]">{post.title}</span>
+                                            {/* 💡 댓글 숫자가 0보다 클 때만 작은 뱃지로 표시 */}
+                                            {(post as any).commentCount > 0 && (
+                                              <span className="ml-1.5 text-[10px] bg-indigo-50 text-indigo-500 px-1.5 py-0.5 rounded font-bold border border-indigo-100">
+                                                {(post as any).commentCount}
+                                              </span>
+                                            )}
+                                          </>
+                                        )}
                                     </td>
                                     <td className="p-4 text-gray-500">{new Date(post.created_at).toLocaleDateString()}</td>
                                     <td className="p-4 text-center">
