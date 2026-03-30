@@ -11,6 +11,7 @@ B2B SaaS 구조를 구현한 웹 애플리케이션입니다.
 ## 🔗 배포 링크 & 프리뷰
 
 - 실제 배포: [Dashboard 접속하기](https://my-baas-project.vercel.app/dashboard)
+- 진입 로그인 폼 -> ID: admin@test.com / PW:admin 
 
 <br/>
 
