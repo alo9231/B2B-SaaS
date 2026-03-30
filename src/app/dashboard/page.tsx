@@ -5,6 +5,8 @@ import { supabase } from "@/lib/supabase";
 import { useRouter } from 'next/navigation';
 import useModalStore from '@/store/useModalStore';
 import PostsDetailModal from '@/components/dashboard/PostsDetailModal';
+// 1. react-hot-toast 임포트 확인
+import { toast } from 'react-hot-toast';
 
 interface Post {
   id: number;
@@ -28,16 +30,6 @@ export default function DashboardPage() {
     direction: 'desc'
   });
 
-  const [toast, setToast] = useState<{ message : string; visible: boolean}>({
-    message:'',
-    visible: false,
-  })
-
-  const showToast = (msg: string) => {
-    setToast({message : msg, visible: true})
-    setTimeout(() => setToast({ message : '', visible : false}), 3000)
-  }
-
   async function getPosts() {
     const { data, error } = await supabase
       .from('posts')
@@ -54,7 +46,7 @@ export default function DashboardPage() {
         commentCount: item.comments ? item.comments.length : 0
       }))
       setPosts(updatedData || []);
-      setLoading(false); // 데이터 로딩 완료
+      setLoading(false);
     }
   }
 
@@ -72,7 +64,8 @@ export default function DashboardPage() {
     const channel = supabase
       .channel('realatime-comments')
       .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'comments'}, (payload) => {
-          showToast(`💬 새 댓글이 등록되었습니다!`);
+          // 2. 실시간 댓글 알림 -> 공통 토스트로 교체
+          toast.success(`💬 새 댓글이 등록되었습니다!`);
           getPosts();
       }).subscribe();
 
@@ -111,28 +104,36 @@ export default function DashboardPage() {
     if (!error) {
       setEditingId(null);
       getPosts();
-      showToast('✅ 수정되었습니다.');
+      // 3. 수정 알림 -> 공통 토스트로 교체
+      toast.success('✅ 수정되었습니다.');
     }
   }
 
   async function deletePost(id: number) {
     if (!confirm('삭제하시겠습니까?')) return
     const { error } = await supabase.from('posts').delete().eq('id', id)
-    if (!error) { getPosts(); showToast('✅ 삭제되었습니다.'); }
+    if (!error) { 
+        getPosts(); 
+        // 4. 삭제 알림 -> 공통 토스트로 교체
+        toast.success('✅ 삭제되었습니다.'); 
+    }
   }
 
   const toggleStatus = async (post: Post) => {
     const statusOrder: ('Active' | 'Pending' | 'Closed')[] = ['Active', 'Pending', 'Closed'];
     const nextStatus = statusOrder[(statusOrder.indexOf(post.status || 'Active') + 1) % 3];
     const { error } = await supabase.from('posts').update({ status : nextStatus }).eq('id', post.id);
-    if(!error) getPosts();
+    if(!error) {
+        getPosts();
+        toast.success(`상태가 ${nextStatus}로 변경되었습니다.`);
+    }
   }
 
   if (loading) return <div className="p-20 text-center text-gray-400">데이터 로딩 중...</div>;
 
   return (
     <div className="p-8 space-y-8">
-      {/* 1. 검색바 (헤더에서 내려옴) */}
+      {/* 검색바 섹션 */}
       <div className="flex justify-end">
         <div className="relative w-72">
           <input 
@@ -143,7 +144,7 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      {/* 2. 통계 섹션 */}
+      {/* 통계 섹션 */}
       <section className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
           <p className="text-sm text-gray-500">총 데이터</p>
@@ -159,7 +160,7 @@ export default function DashboardPage() {
         </div>
       </section>
 
-      {/* 3. 테이블 섹션 */}
+      {/* 테이블 섹션 */}
       <section className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
         <table className="w-full text-left border-collapse">
           <thead className="bg-gray-50 text-gray-500 text-xs uppercase font-bold">
@@ -209,11 +210,8 @@ export default function DashboardPage() {
       </section>
 
       <PostsDetailModal />
-      {toast.visible && (
-        <div className="fixed bottom-5 right-5 z-[100] bg-slate-900 text-white px-6 py-3 rounded-lg shadow-lg animate-bounce">
-          {toast.message}
-        </div>
-      )}
+      
+  
     </div>
   )
 }
