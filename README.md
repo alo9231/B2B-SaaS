@@ -1,76 +1,85 @@
-# 🚀 TaskFlow (B2B SaaS Collaboration Dashboard)
+# 🏢 B2B SaaS Platform
 
-> **실시간 협업 관리 솔루션**입니다.  
-> 단순한 기능 구현을 넘어, 데이터 안정성과 고성능 인터랙티브 UI 구현에 초점을 맞췄습니다.
+기업(Organization) 단위로 사용자 관리와 서비스 이용이 가능한  
+B2B SaaS 구조를 구현한 웹 애플리케이션입니다.
 
+단순 CRUD 구현을 넘어  
+**멀티 유저 환경에서의 상태 관리와 구조 설계**에 초점을 맞췄습니다.
 
-### 🔗 Project Links
-- **Live Demo**: [https://my-baas-project.vercel.app/](https://my-baas-project.vercel.app/)
+<br/>
 
----
+## 🔗 배포 링크 & 프리뷰
 
-### 🛠 Tech Stack
-| Category | Tech Stack |
-| :--- | :--- |
-| **Framework** | **Next.js 14 (App Router)**, TypeScript |
-| **State** | **Zustand** (UI State), **TanStack Query** (Server State) |
-| **Backend** | **Supabase** (Auth, Database, Real-time) |
-| **Styling** | **Tailwind CSS**, **GSAP** (Interactive Motion) |
-| **Deployment** | **Vercel** |
+- 실제 배포: [Dashboard 접속하기](https://my-baas-project.vercel.app/dashboard)
 
----
+<br/>
 
-### 📋 주요 기능 (Key Features)
+## 📌 프로젝트 목적
 
-#### ✅ 스마트 칸반 보드 (Interactive Kanban Board)
-- **Drag & Drop**: Zustand 기반의 전역 상태 관리를 통해 실시간으로 작업 카테고리를 이동 및 저장합니다.
-- **GSAP Smooth Motion**: 단순 CSS를 넘어 **GSAP Stagger**를 활용, 카드 이동 및 리스트 순서 변경 시 부드럽고 직관적인 피드백을 제공합니다.
+B2B SaaS 서비스는 개인이 아닌  
+**조직 단위로 사용자와 권한을 관리하는 구조**가 핵심입니다.
 
-#### ✅ 실시간 데이터 동기화 (Real-time Sync)
-- **Server State Optimization**: TanStack Query를 활용하여 서버 데이터를 캐싱하고, Supabase Real-time을 연동하여 협업 중인 팀원의 변경사항을 즉각 반영합니다.
-- **Responsive Layout**: 복잡한 대시보드 레이아웃을 모바일부턴 와이드 모니터까지 완벽하게 대응했습니다.
+이 프로젝트에서는 다음을 목표로 구현했습니다:
 
-#### ✅ 데이터 시각화 & 필터링 (Data Visualization)
-- **Complex Filtering**: TypeScript의 엄격한 타입 정의를 통해 다중 조건 필터링 기능을 버그 없이 안정적으로 구현했습니다.
-- **UX Detail**: Skeleton UI와 부드러운 트랜지션을 적용하여 데이터 로딩 시의 사용자 이탈률을 최소화했습니다.
+- 조직(Organization) 기반 사용자 구조 이해
+- 사용자 상태 및 데이터 흐름 설계
+- 확장 가능한 프론트엔드 구조 구성
 
-#### ✅ 사용자 인증 및 데이터 검증 (Auth & Form Validation)
-- **Secure Auth**: Supabase Auth를 연동하여 소셜 로그인 및 이메일 기반의 안전한 인증 시스템을 구축했습니다.
-- **Robust Validation**: `React Hook Form`과 `Zod`를 결합하여 실시간 유효성 검사를 구현, 불필요한 서버 요청을 방지하고 사용자 입력 실수를 최소화했습니다.
-- **Interactive UX**: 폼 입력 에러 발생 시 GSAP를 활용한 마이크로 인터랙션을 적용하여 사용자에게 직관적인 피드백을 제공합니다.
+<br/>
 
----
+## 🚀 주요 기능
 
-### 🧠 기술적 고민 & 해결 (Problem Solving)
+- 👤 사용자 로그인 / 인증
+- 🏢 조직(Organization) 기반 데이터 구조
+- 👥 사용자 목록 및 관리
+- 🔐 권한 기반 UI 분기
+- 📊 서비스 데이터 조회
 
-#### 1. 복잡한 UI 상태 관리 최적화
-- **Issue**: 대시보드 특성상 여러 컴포넌트에서 동일한 작업 데이터를 참조하여 Prop Drilling 발생 우려.
-- **Solution**: **Zustand**를 도입하여 보일러플레이트를 최소화하고, 클라이언트 상태와 서버 상태(TanStack Query)를 명확히 분리하여 데이터 흐름을 설계했습니다.
+<br/>
 
-#### 2. 고성능 애니메이션과 브라우저 최적화
-- **Issue**: 대량의 카드 데이터 렌더링 시 애니메이션 끊김 현상 발생 가능성.
-- **Solution**: 브라우저 렌더링 파이프라인을 고려하여 **GSAP**로 애니메이션을 제어, 저사양 기기에서도 끊김 없는 사용자 경험을 제공하도록 최적화했습니다.
+## 💡 문제 해결 과정
 
-#### 3. 컴포넌트 재사용성 및 확장성 (Atomic Design)
-- **Approach**: 공통 UI 컴포넌트를 분리하여 유지보수 비용을 절감하고, 일관된 디자인 시스템을 유지하도록 설계했습니다. '관리 효율성'을 코드 수준으로 확장한 결과입니다.
+### 1. 사용자 상태 관리 복잡도 해결
+여러 사용자와 조직 데이터를 동시에 다루면서  
+상태가 분산되고 관리가 어려운 문제가 있었습니다.
+
+→ 전역 상태 관리 구조를 도입하여  
+**사용자 및 조직 데이터를 일관되게 관리**하도록 개선했습니다.
 
 ---
 
-## 📂 Project Structure
+### 2. 컴포넌트 역할 분리
+UI와 로직이 혼재되어 컴포넌트 복잡도가 증가하는 문제 해결
 
-```text
-src/
-├── app/                  # Next.js App Router (페이지 및 레이아웃)
-│   ├── dashboard/        # 대시보드 페이지 (데이터 관리)
-│   │   └── page.tsx
-│   ├── login/            # 로그인 페이지
-│   │   └── page.tsx
-│   ├── layout.tsx        # 전체 공통 레이아웃
-│   └── page.tsx          # 메인 페이지 (인증 여부에 따른 리다이렉트)
-├── components/           # 재사용 가능한 UI 컴포넌트
-│   ├── auth/             # 인증 관련 컴포넌트 (SignInForm 등)
-│   └── ui/               # 공통 UI 요소 (Button, Input 등)
-├── lib/                  # 외부 라이브러리 설정
-│   └── supabase.ts       # Supabase Client 설정 및 초기화
-├── types/                # TypeScript 타입 정의 파일
-└── store/                # 상태 관리 (Zustand 등)
+→ UI와 비즈니스 로직을 분리하여  
+**관심사 분리(Separation of Concerns)** 구조로 개선
+
+---
+
+### 3. API 구조 개선
+컴포넌트 내부에서 API 호출 → 로직 분산
+
+→ API 모듈을 분리하고 공통 클라이언트 도입  
+**데이터 처리 구조 통일**
+
+---
+
+### 4. 사용자 경험 개선
+데이터 로딩 및 처리 과정에서 사용자 피드백 부족 문제
+
+→ 로딩 상태, 에러 처리 추가  
+**사용자 경험 개선**
+
+<br/>
+
+## 🛠 기술 스택
+
+- **Frontend**: React
+- **Language**: TypeScript
+- **State Management**: (Zustand / Redux / Context API)
+- **Routing**: React Router
+- **API**: Fetch / Axios
+
+<br/>
+
+## 📁 프로젝트 구조
