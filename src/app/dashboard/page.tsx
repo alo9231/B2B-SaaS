@@ -135,7 +135,7 @@ export default function DashboardPage() {
     <div className="p-8 space-y-8">
       {/* 검색바 섹션 */}
       <div className="flex justify-end">
-        <div className="relative w-72">
+        <div className="relative w-full md:w-72">
           <input 
             type="text" placeholder='데이터 검색...' 
             value={searchTerm} onChange={(e)=> setSearchTerm(e.target.value)}
@@ -145,16 +145,16 @@ export default function DashboardPage() {
       </div>
 
       {/* 통계 섹션 */}
-      <section className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+      <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+        <div className="bg-white p-4 md:p-6 rounded-xl shadow-sm border border-gray-100">
           <p className="text-sm text-gray-500">총 데이터</p>
           <p className="text-3xl font-bold text-indigo-600">{posts.length}개</p>
         </div>
-        <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+        <div className="bg-white p-4 md:p-6 rounded-xl shadow-sm border border-gray-100">
           <p className="text-sm text-gray-500">오늘 상태</p>
           <p className="text-3xl font-bold text-green-500">Active</p>
         </div>
-        <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+        <div className="bg-white p-4 md:p-6 rounded-xl shadow-sm border border-gray-100">
           <p className="text-sm text-gray-500">서버 상태</p>
           <p className="text-3xl font-bold text-orange-400">Normal</p>
         </div>
@@ -162,51 +162,61 @@ export default function DashboardPage() {
 
       {/* 테이블 섹션 */}
       <section className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-        <table className="w-full text-left border-collapse">
-          <thead className="bg-gray-50 text-gray-500 text-xs uppercase font-bold">
-            <tr>
-              <th className="p-4 border-b cursor-pointer" onClick={() => requestSort('id')}>ID</th>
-              <th className="p-4 border-b cursor-pointer" onClick={() => requestSort('status')}>상태</th>
-              <th className="p-4 border-b">제목</th>
-              <th className="p-4 border-b cursor-pointer" onClick={() => requestSort('created_at')}>생성일</th>
-              <th className="p-4 border-b text-center">관리</th>
-            </tr>
-          </thead>
-          <tbody>
-            {sortedPosts.map((post) => (
-              <tr key={post.id} className="hover:bg-indigo-50/30 cursor-pointer transition-colors" onClick={() => openModal(post.id)}>
-                <td className="p-4 text-gray-400 font-mono text-sm">{post.id}</td>
-                <td className='p-4'>
-                  <span onClick={(e)=> { e.stopPropagation(); toggleStatus(post); }} 
-                        className={`px-2 py-1 rounded-md text-[10px] font-black border ${getStatusStyle(post.status || 'Active').style}`}>
-                    {getStatusStyle(post.status || 'Active').label}
-                  </span>
-                </td>
-                <td className="p-4 font-medium">
-                  {editingId === post.id ? (
-                    <input value={editTitle} onChange={(e) => setEditTitle(e.target.value)} onClick={(e)=>e.stopPropagation()} className='border rounded p-1 w-full'/>
-                  ) : (
-                    <div className="flex items-center gap-2">
-                      {post.title}
-                      {post.commentCount! > 0 && <span className="text-[10px] bg-indigo-50 text-indigo-500 px-1.5 py-0.5 rounded-full font-bold">{post.commentCount}</span>}
-                    </div>
-                  )}
-                </td>
-                <td className="p-4 text-gray-500 text-sm">{new Date(post.created_at).toLocaleDateString()}</td>
-                <td className="p-4 text-center" onClick={(e)=>e.stopPropagation()}>
-                  <div className="flex justify-center gap-2">
-                    {editingId === post.id ? (
-                      <button onClick={()=> updatePost(post.id)} className="text-green-600 text-sm font-bold">완료</button>
-                    ) : (
-                      <button onClick={()=> { setEditingId(post.id); setEditTitle(post.title); }} className="text-indigo-500 text-sm">수정</button>
-                    )}
-                    <button onClick={()=> deletePost(post.id)} className="text-red-400 text-sm">삭제</button>
-                  </div>
-                </td>
+        <div  className="overflow-x-auto">{/* ✅ 모바일 가로 스크롤 허용 */}
+            <table className="w-full min-w-[800px] text-left border-collapse">
+            <thead className="bg-gray-50 text-gray-500 text-xs uppercase font-bold">
+              <tr>
+                <th className="p-4 border-b hidden sm:table-cell">ID</th>
+                <th className="p-4 border-b">상태</th>
+                <th className="p-4 border-b">제목</th>
+                {/* ✅ 모바일(sm 미만)에서는 숨김 */}
+                <th className="p-4 border-b hidden sm:table-cell">생성일</th>
+                <th className="p-4 border-b text-center">관리</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {sortedPosts.map((post) => (
+                <tr key={post.id} className="hover:bg-indigo-50/30 cursor-pointer transition-colors" onClick={() => openModal(post.id)}>
+                  <td className="p-4 text-gray-400 font-mono text-sm hidden sm:table-cell">{post.id}</td>
+                  <td className='p-4'>
+                    <span 
+                        onClick={(e) => { e.stopPropagation(); toggleStatus(post); }} 
+                        // ✅ whitespace-nowrap과 min-w-[50px] (또는 w-fit) 추가
+                        className={`px-2 py-1 rounded-md text-[10px] font-black border whitespace-nowrap min-w-[48px] text-center inline-block ${getStatusStyle(post.status || 'Active').style}`}
+                      >
+                        {getStatusStyle(post.status || 'Active').label}
+                    </span>
+                  </td>
+                  <td className="p-4 font-medium">
+                    {editingId === post.id ? (
+                      <input value={editTitle} onChange={(e) => setEditTitle(e.target.value)} onClick={(e)=>e.stopPropagation()} className='border rounded p-1 w-full'/>
+                    ) : (
+                      <div className="flex items-center gap-2">
+                        {post.title}
+                        {post.commentCount! > 0 && <span className="text-[10px] bg-indigo-50 text-indigo-500 px-1.5 py-0.5 rounded-full font-bold">{post.commentCount}</span>}
+                      </div>
+                    )}
+                  </td>
+                  {/* ✅ 셀에도 hidden sm:table-cell 적용 */}
+                  <td className="p-4 text-gray-500 text-sm hidden sm:table-cell">
+                    {new Date(post.created_at).toLocaleDateString()}
+                  </td>
+                  <td className="p-4 text-center" onClick={(e)=>e.stopPropagation()}>
+                    <div className="flex justify-center gap-2">
+                      {editingId === post.id ? (
+                        <button onClick={()=> updatePost(post.id)} className="text-green-600 text-sm font-bold">완료</button>
+                      ) : (
+                        <button onClick={()=> { setEditingId(post.id); setEditTitle(post.title); }} className="text-indigo-500 text-sm">수정</button>
+                      )}
+                      <button onClick={()=> deletePost(post.id)} className="text-red-400 text-sm">삭제</button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+       
       </section>
 
       <PostsDetailModal />

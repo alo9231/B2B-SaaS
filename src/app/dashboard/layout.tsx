@@ -3,10 +3,29 @@
 
 import { usePathname } from 'next/navigation';
 import { Toaster } from 'react-hot-toast';
-import Link from 'next/link';
+import { useState, useEffect } from 'react';
+
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+
+  // 사이드바 상태 관리
+  const [isCollapsed, setIsCollapsed] = useState(false);
+
+  // 1024px(lg) 기준으로 자동 접힘 로직
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth < 1024) {
+        setIsCollapsed(true);
+      } else {
+        setIsCollapsed(false);
+      }
+    };
+    
+    handleResize(); // 초기 로드 시 실행
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   return (
     <div className="flex h-screen bg-gray-50">
@@ -30,22 +49,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           },
         }}
       />
-      {/* ⬅️ 여기가 공통 사이드바 (거실) */}
-      <aside className="w-64 bg-slate-900 text-white flex flex-col shrink-0">
-        <div className="p-6 text-2xl font-bold border-b border-slate-700 text-indigo-400 italic font-mono">B2B Admin</div>
-        <nav className="flex-1 p-4 space-y-2">
-          <Link href="/dashboard" className={`w-full p-3 rounded block transition ${pathname === '/dashboard' ? 'bg-indigo-600' : 'text-slate-400 hover:bg-slate-800'}`}>
-            대시보드
-          </Link>
-          <Link href="/dashboard/analytics" className={`w-full p-3 rounded block transition ${pathname === '/dashboard/analytics' ? 'bg-indigo-600' : 'text-slate-400 hover:bg-slate-800'}`}>
-            통계 분석
-          </Link>
-          <Link href="/dashboard/kanban" className={`w-full p-3 rounded block transition ${pathname === '/dashboard/kanban' ? 'bg-indigo-600' : 'text-slate-400 hover:bg-slate-800'}`}>
-            할일 목록(드래그 칸반 보드)
-          </Link>
-        </nav>
-      </aside>
-
+      {/* ⬅️  공통 사이드바 (거실) : isCollapsed 상태에 따라 너비가 변함 */}
+      
       {/* ➡️ 여기가 내용이 바뀌는 곳 (안방/건너방) */}
       <div className="flex-1 flex flex-col overflow-hidden">
 
