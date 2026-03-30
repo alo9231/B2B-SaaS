@@ -31,6 +31,10 @@ function SortTableTaskCard({ task, onDelete, onUpdate }: {
     });
 
     const handleUpdate = () => {
+        if (!editContent.trim()) { // 공백만 있거나 비어있으면
+            toast.error("내용을 입력해주세요!");
+            return;
+        }
         onUpdate(task.id, editContent);
         setIsEditing(false);
     };
