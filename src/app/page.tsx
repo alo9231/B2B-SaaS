@@ -48,7 +48,7 @@ export default function Home() {
     const { data, error } = await supabase
       .from('posts')
       .select(`*, comments(id)`) // 댓글의 id 목록을 함께 가져옴
-      .order('created_at', { ascending: false })
+      .order('created_at', { ascending: false }) // DB에서 가져올 때 최신순 정렬
     
     if (error) {
       console.error('Error fetching:', error);
@@ -60,6 +60,11 @@ export default function Home() {
         // 💡 댓글 개수를 미리 계산해서 넣어줌
         commentCount: item.comments ? item.comments.length : 0
       }))
+
+      // 💡 혹시 모르니 클라이언트 측에서도 한 번 더 정렬해주면 확실
+      const sortedData = updatedData?.sort((a: any, b: any) => 
+          new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+      );
       setPosts(updatedData || []);
     }
   }
@@ -229,7 +234,7 @@ export default function Home() {
                             <th className="p-4 border-b cursor-pointer" onClick={() => requestSort('id')}>ID {sortConfig.key === 'id' ? (sortConfig.direction === 'asc' ? '↑' : '↓') : '↓'}</th>
                             <th className="p-4 border-b cursor-pointer" onClick={() => requestSort('status')}>상태 {sortConfig.key === 'status' ? (sortConfig.direction === 'asc' ? '↑' : '↓') : '↓'}</th>
                             <th className="p-4 border-b cursor-pointer" onClick={() => requestSort('title')}>제목 {sortConfig.key === 'title' ? (sortConfig.direction === 'asc' ? '↑' : '↓') : '↓'}</th>
-                            <th className="p-4 border-b">생성일</th>
+                            <th className="p-4 border-b cursor-pointer" onClick={() => requestSort('created_at')}>생성일 {sortConfig.key === 'created_at' ? (sortConfig.direction === 'asc' ? '↑' : '↓') : '↓'}</th>
                             <th className="p-4 border-b text-center">관리</th>
                         </tr>
                     </thead>
