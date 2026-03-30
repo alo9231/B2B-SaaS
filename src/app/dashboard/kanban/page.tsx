@@ -17,60 +17,102 @@ interface Task {
 }
 
 // ✅ 개별 카드 컴포넌트
-function SortTableTaskCard({ task, onDelete }: { task: Task, onDelete : (id : number) => void }) {
-    const {
-        attributes,
-        listeners,
-        setNodeRef,
-        transform,
-        transition,
-        isDragging,
-    } = useSortable({ id: task.id });
+function SortTableTaskCard({ task, onDelete, onUpdate }: { 
+    task: Task, 
+    onDelete: (id: number) => void,
+    onUpdate: (id: number, newContent: string) => void // ✅ 업데이트 함수 추가 
+}) {
+    const [isEditing, setIsEditing] = useState(false);
+    const [editContent, setEditContent] = useState(task.content);
 
-    const style = {
-        transform: CSS.Translate.toString(transform),
-        transition: isDragging ? 'none' : transition, // 드래그 중엔 애니메이션 Off
-        zIndex: isDragging ? 50 : 1, // ✅ 평소에도 1 정도는 줘야 다른 요소 위로 올라옴
+    const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ 
+        id: task.id,
+        disabled: isEditing // ✅ 수정 중에는 드래그 기능을 잠시 끄기 (텍스트 선택을 위해)
+    });
+
+    const handleUpdate = () => {
+        onUpdate(task.id, editContent);
+        setIsEditing(false);
     };
 
-    return(
-        <div ref={setNodeRef} 
-             style={style}
-             // ✅ relative 꼭 확인! 아이콘이 이 박스를 기준으로 배치됨!!
-             className={`group relative bg-white p-5 rounded-2xl shadow-sm border transition-all cursor-grab active:cursor-grabbing ${
-                isDragging
-                    ? 'border-indigo-300 shadow-2xl scale-105 rotate-2' // 붕 떠오르고 살짝 회전
-                    : 'border-gray-100 hover:border-indigo-100 shadow-sm hover:shadow-md'
-                }`}
+    const style = {
+        transform: CSS.Transform.toString(transform),
+        transition,
+        opacity: isDragging ? 0.8 : 1,
+        zIndex: isDragging ? 999 : 'auto',
+    };
+
+    return (
+        <div ref={setNodeRef} style={style} {...attributes} {...listeners}
+            className={`group relative p-5 rounded-2xl shadow-sm border transition-all cursor-grab active:cursor-grabbing ${
+                isDragging ? 'bg-indigo-50 border-indigo-300 scale-105 rotate-1 z-50' : 'bg-white border-gray-100 hover:border-indigo-100 shadow-sm'
+            }`}
         >
-           {/* ✅ UX 디테일: 드래그 핸들 아이콘 (여기를 잡아야만 드래그 됨) */}
-            <div {...attributes} 
-                 {...listeners} 
-                 className="absolute top-1/2 -translate-y-1/2 left-3 text-gray-400 hover:text-indigo-500 transition-colors z-10"
-            >
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="9" cy="12" r="1"/><circle cx="9" cy="5" r="1"/><circle cx="9" cy="19" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="15" cy="5" r="1"/><circle cx="15" cy="19" r="1"/></svg>
+            {/* ➡️ 상단 영역: ID와 기능 버튼들 (수정, 삭제) */}
+            <div className="flex justify-between items-center mb-3">
+            <span className="text-xs font-mono text-gray-400 bg-gray-50 px-2 py-1 rounded-md">#{task.id}</span>
+            
+            <div className="flex items-center gap-1">
+                {/* 연필(수정) 버튼 */}
+                <button 
+                onClick={(e) => { e.stopPropagation(); setIsEditing(!isEditing); }}
+                className="p-1.5 text-gray-400 hover:text-indigo-500 hover:bg-indigo-50 rounded-lg transition-colors"
+                title="수정"
+                >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path>
+                </svg>
+                </button>
+
+                {/* 휴지통(삭제) 버튼 - 이제 상단에 같이 배치해서 정렬을 맞춥니다 */}
+                {!isEditing && (
+                <button 
+                    onClick={(e) => { e.stopPropagation(); onDelete(task.id); }}
+                    className="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                    title="삭제"
+                >
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/>
+                    </svg>
+                </button>
+                )}
+            </div>
             </div>
 
-            {/* 핸들과 삭제버튼 공간 확보 */}
-            <div className="pl-6 pr-6">
-                <p className={`text-gray-700 font-medium break-all leading-relaxed ${isDragging ? 'text-indigo-900' : ''}`}>
+            {/* ➡️ 본문 영역: 수정 모드일 때와 아닐 때 */}
+            <div className="min-h-[48px] flex items-center"> {/* 최소 높이를 주어 정렬 유지 */}
+            {isEditing ? (
+                <div className="w-full space-y-3">
+                <textarea 
+                    value={editContent}
+                    onChange={(e) => setEditContent(e.target.value)}
+                    // ✅ 엔터 누르면 저장, ESC 누르면 취소하는 로직
+                    onKeyDown={(e) => {
+                        if (e.key === 'Enter' && !e.shiftKey) { // Shift+Enter는 줄바꿈
+                            e.preventDefault();
+                            handleUpdate();
+                        }
+                        if (e.key === 'Escape') {
+                            setIsEditing(false);
+                        }
+                    }}
+                    className="w-full p-3 border border-indigo-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none text-sm leading-relaxed"
+                    rows={2}
+                    autoFocus
+                />
+                <div className="flex gap-2 justify-end">
+                    <button onClick={() => setIsEditing(false)} className="px-3 py-1 text-xs text-gray-500 hover:bg-gray-100 rounded-md transition-colors">취소</button>
+                    <button onClick={handleUpdate} className="px-3 py-1 text-xs bg-indigo-600 text-white font-bold rounded-md hover:bg-indigo-700 transition-colors shadow-sm">저장</button>
+                </div>
+                </div>
+            ) : (
+                <p className="text-gray-700 font-medium break-all leading-relaxed w-full">
                     {task.content}
                 </p>
+            )}
             </div>
-
-            {/* ✅ 삭제 버튼 */}
-            <button onClick={(e) => {
-                e.stopPropagation(); // 드래그 이벤트 방해 금지
-                onDelete(task.id);
-                }}
-                className="absolute top-1/2 -translate-y-1/2 right-3 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all p-1.5 z-10"
-                aria-label="삭제"
-            >
-                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
-            </button>
-
         </div>
-    )
+        );
 
 }
 
@@ -132,6 +174,24 @@ export default function KanbanPage () { // 컴포넌트 첫 글자는 대문자�
         }
     });
 
+    // 수정 로직 
+    const { mutate: updateTask } = useMutation({
+        mutationFn: async ({ id, content }: { id: number; content: string }) => {
+            const { error } = await supabase
+                .from('tasks')
+                .update({ content })
+                .eq('id', id);
+            if (error) throw error;
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['tasks'] });
+            toast.success('내용이 수정되었습니다!', {
+                icon: '📝',
+                style: { borderRadius: '12px', background: '#333', color: '#fff' }
+            });
+        }
+    });
+
     // ✅ 드래그 종료 핸들러
     const handleDragEnd = async (event: DragEndEvent) => {
         const { active, over } = event;
@@ -144,12 +204,15 @@ export default function KanbanPage () { // 컴포넌트 첫 글자는 대문자�
         if (!activeTask) return;
 
         // 1. 새로운 상태 결정
-        let newStatus: 'todo' | 'doing' | 'done' = activeTask.status;
+        let newStatus: Task['status'];
+
+        //  overId가 컬럼명 그 자체인 경우 (빈 컬럼으로 던졌을 때)
         if (['todo', 'doing', 'done'].includes(overId as string)) {
-            newStatus = overId as any;
+            newStatus = overId as Task['status'];
         } else {
+            // 2. 다른 카드 위로 던졌을 때
             const overTask = tasks.find((t) => t.id === overId);
-            if (overTask) newStatus = overTask.status;
+            newStatus = overTask ? overTask.status : activeTask.status;
         }
 
         // 2. 위치 및 상태 업데이트 로직
@@ -272,6 +335,7 @@ export default function KanbanPage () { // 컴포넌트 첫 글자는 대문자�
                                                 onDelete={(id) => {
                                                     if(confirm('정말 삭제하시겠습니까?')) deleteTask(id);
                                                 }}
+                                                onUpdate={(id, content) => updateTask({ id, content })}
                                             />
                                         )}
                                     </div>
