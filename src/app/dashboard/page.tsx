@@ -22,6 +22,7 @@ export default function DashboardPage() {
   const [editTitle, setEditTitle] = useState('')
   const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(true);
+  const [newPostTitle, setNewPostTitle] = useState(''); // 새글 등록
   const router = useRouter(); 
   const openModal = useModalStore((state) => state.openModal);
 
@@ -47,6 +48,26 @@ export default function DashboardPage() {
       }))
       setPosts(updatedData || []);
       setLoading(false);
+    }
+  }
+
+  // 새 글 등록
+  async function addPost() {
+    if (!newPostTitle.trim()) {
+      toast.error('제목을 입력해주세요.');
+      return;
+    }
+
+    const { error } = await supabase
+      .from('posts')
+      .insert([{ title: newPostTitle, status: 'Active' }]);
+
+    if (error) {
+      toast.error('등록 실패');
+    } else {
+      setNewPostTitle(''); // 입력창 초기화
+      getPosts(); // 목록 새로고침
+      toast.success('✅ 게시글이 등록되었습니다.');
     }
   }
 
@@ -132,14 +153,33 @@ export default function DashboardPage() {
   if (loading) return <div className="p-20 text-center text-gray-400">데이터 로딩 중...</div>;
 
   return (
-    <div className="p-8 space-y-8">
+    <div className="p-4 sm:p-6 lg:p-8 space-y-6 sm:space-y-8">
+
+      {/* 새글 등록 섹션 */}
+      <div className="flex flex-col md:flex-row gap-4 items-end bg-white p-6 rounded-3xl shadow-sm border border-gray-100">
+        <input 
+          type="text" 
+          placeholder="새 게시글 제목 입력..." 
+          value={newPostTitle}
+          onChange={(e) => setNewPostTitle(e.target.value)}
+          onKeyDown={(e) => e.key === 'Enter' && addPost()} // 엔터로 등록 가능
+          className="w-full p-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-indigo-500 outline-none" 
+        />
+        <button 
+          onClick={addPost}
+          className="w-full md:w-24 p-3 bg-indigo-600 text-white rounded-xl font-bold hover:bg-indigo-700 shadow-md active:scale-95 transition-all"
+        >
+          등록하기
+        </button>
+      </div>
+
       {/* 검색바 섹션 */}
       <div className="flex justify-end">
-        <div className="relative w-full md:w-72">
+        <div className="relative w-full">
           <input 
             type="text" placeholder='데이터 검색...' 
             value={searchTerm} onChange={(e)=> setSearchTerm(e.target.value)}
-            className='w-full pl-4 pr-4 py-2 border rounded-lg bg-white text-sm outline-none focus:ring-2 focus:ring-indigo-400 transition'
+            className="bg-white w-full p-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-indigo-500 outline-none"
           />
         </div>
       </div>
@@ -161,62 +201,59 @@ export default function DashboardPage() {
       </section>
 
       {/* 테이블 섹션 */}
-      <section className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-        <div  className="overflow-x-auto">{/* ✅ 모바일 가로 스크롤 허용 */}
-            <table className="w-full min-w-[800px] text-left border-collapse">
-            <thead className="bg-gray-50 text-gray-500 text-xs uppercase font-bold">
-              <tr>
-                <th className="p-4 border-b hidden sm:table-cell">ID</th>
-                <th className="p-4 border-b">상태</th>
-                <th className="p-4 border-b">제목</th>
-                {/* ✅ 모바일(sm 미만)에서는 숨김 */}
-                <th className="p-4 border-b hidden sm:table-cell">생성일</th>
-                <th className="p-4 border-b text-center">관리</th>
-              </tr>
-            </thead>
-            <tbody>
-              {sortedPosts.map((post) => (
-                <tr key={post.id} className="hover:bg-indigo-50/30 cursor-pointer transition-colors" onClick={() => openModal(post.id)}>
-                  <td className="p-4 text-gray-400 font-mono text-sm hidden sm:table-cell">{post.id}</td>
-                  <td className='p-4'>
-                    <span 
-                        onClick={(e) => { e.stopPropagation(); toggleStatus(post); }} 
-                        // ✅ whitespace-nowrap과 min-w-[50px] (또는 w-fit) 추가
-                        className={`px-2 py-1 rounded-md text-[10px] font-black border whitespace-nowrap min-w-[48px] text-center inline-block ${getStatusStyle(post.status || 'Active').style}`}
-                      >
-                        {getStatusStyle(post.status || 'Active').label}
-                    </span>
-                  </td>
-                  <td className="p-4 font-medium">
-                    {editingId === post.id ? (
-                      <input value={editTitle} onChange={(e) => setEditTitle(e.target.value)} onClick={(e)=>e.stopPropagation()} className='border rounded p-1 w-full'/>
-                    ) : (
-                      <div className="flex items-center gap-2">
-                        {post.title}
-                        {post.commentCount! > 0 && <span className="text-[10px] bg-indigo-50 text-indigo-500 px-1.5 py-0.5 rounded-full font-bold">{post.commentCount}</span>}
-                      </div>
-                    )}
-                  </td>
-                  {/* ✅ 셀에도 hidden sm:table-cell 적용 */}
-                  <td className="p-4 text-gray-500 text-sm hidden sm:table-cell">
-                    {new Date(post.created_at).toLocaleDateString()}
-                  </td>
-                  <td className="p-4 text-center" onClick={(e)=>e.stopPropagation()}>
-                    <div className="flex justify-center gap-2">
-                      {editingId === post.id ? (
-                        <button onClick={()=> updatePost(post.id)} className="text-green-600 text-sm font-bold">완료</button>
-                      ) : (
-                        <button onClick={()=> { setEditingId(post.id); setEditTitle(post.title); }} className="text-indigo-500 text-sm">수정</button>
-                      )}
-                      <button onClick={()=> deletePost(post.id)} className="text-red-400 text-sm">삭제</button>
-                    </div>
-                  </td>
+      <section className="bg-white rounded-xl shadow-sm border border-gray-100 w-full overflow-x-auto">
+        <div className="w-full overflow-x-auto overflow-y-hidden min-w-[900px]">{/* ✅ 모바일 가로 스크롤 허용 */}
+            <table className="w-full text-left border-collapse">
+              <thead className="bg-gray-50 text-gray-500 text-xs uppercase font-bold">
+                <tr>
+                  <th className="p-4 border-b hidden  whitespace-nowrap">ID</th>
+                  <th className="p-4 border-b whitespace-nowrap">상태</th>
+                  <th className="p-4 border-b whitespace-nowrap">제목</th>          
+                  <th className="p-4 border-b hidden  whitespace-nowrap">생성일</th>
+                  <th className="p-4 border-b whitespace-nowrap">관리</th>
                 </tr>
-              ))}
-            </tbody>
+              </thead>
+              <tbody>
+                {sortedPosts.map((post) => (
+                  <tr key={post.id} className="hover:bg-indigo-50/30 cursor-pointer transition-colors" onClick={() => openModal(post.id)}>
+                    <td className="p-4 hidden  whitespace-nowrap">{post.id}</td>
+                    <td className="p-4 whitespace-nowrap">
+                      <span 
+                          onClick={(e) => { e.stopPropagation(); toggleStatus(post); }} 
+                          // ✅ whitespace-nowrap과 min-w-[50px] (또는 w-fit) 추가
+                          className={`px-2 py-1 rounded-md text-[10px] font-black border whitespace-nowrap min-w-[48px] text-center inline-block ${getStatusStyle(post.status || 'Active').style}`}
+                        >
+                          {getStatusStyle(post.status || 'Active').label}
+                      </span>
+                    </td>
+                    <td className="p-4 font-medium">
+                      {editingId === post.id ? (
+                        <input value={editTitle} onChange={(e) => setEditTitle(e.target.value)} onClick={(e)=>e.stopPropagation()} className='border rounded p-1 w-full'/>
+                      ) : (
+                        <div className="min-w-[400px] whitespace-nowrap flex items-center gap-2">
+                          {post.title}
+                          {post.commentCount! > 0 && <span className="text-[10px] bg-indigo-50 text-indigo-500 px-1.5 py-0.5 rounded-full font-bold">{post.commentCount}</span>}
+                        </div>
+                      )}
+                    </td>
+                    <td className="p-4 text-gray-500 text-sm hidden ">
+                      {new Date(post.created_at).toLocaleDateString()}
+                    </td>
+                    <td className="p-4 whitespace-nowrap text-center" onClick={(e)=>e.stopPropagation()}>
+                      <div className="flex justify-center gap-2">
+                        {editingId === post.id ? (
+                          <button onClick={()=> updatePost(post.id)} className="text-green-600 text-sm font-bold">완료</button>
+                        ) : (
+                          <button onClick={()=> { setEditingId(post.id); setEditTitle(post.title); }} className="text-indigo-500 text-sm">수정</button>
+                        )}
+                        <button onClick={()=> deletePost(post.id)} className="text-red-400 text-sm">삭제</button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
           </table>
-        </div>
-       
+        </div>       
       </section>
 
       <PostsDetailModal />

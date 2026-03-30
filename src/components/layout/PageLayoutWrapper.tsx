@@ -19,7 +19,11 @@ export default function PageLayoutWrapper({ children }: { children: React.ReactN
       <Sidebar />
       <div className="flex-1 flex flex-col min-w-0">
         <Header />
-        <main className="flex-1 bg-gray-50 overflow-auto p-6">
+        {/* 스크롤이 생겨야 하는 핵심 영역입니다.
+          flex-1: 남은 높이를 다 차지하게 함
+          overflow-y-auto: 내용이 길어지면 세로 스크롤 생성
+        */}
+        <main className="flex-1 bg-gray-50 overflow-y-auto p-6">
           {children}
         </main>
       </div>
