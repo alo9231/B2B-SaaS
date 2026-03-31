@@ -160,7 +160,7 @@ export default function DashboardPage() {
   if (loading) return <div className="p-20 text-center text-gray-400">데이터 로딩 중...</div>;
 
   return (
-    <div className="p-4 sm:p-6 lg:p-8 space-y-6 sm:space-y-8">
+    <div className="space-y-6 sm:space-y-8">
 
       {/* 새글 등록 섹션 */}
       <div className="flex flex-col md:flex-row gap-4 items-end bg-white p-6 rounded-3xl shadow-sm border border-gray-100">

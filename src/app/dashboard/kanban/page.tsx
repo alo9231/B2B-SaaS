@@ -281,7 +281,7 @@ export default function KanbanPage () { // 컴포넌트 첫 글자는 대문자�
             collisionDetection={closestCorners} 
             onDragEnd={handleDragEnd}
         >   
-            <div className="p-8 space-y-8">
+            <div className="space-y-6 sm:space-y-8">
                 {/* 등록 및 필터 영역 */}
                 <div className="flex flex-col md:flex-row gap-4 items-end bg-white p-6 rounded-3xl shadow-sm border border-gray-100">
                     <div className="flex-1 w-full space-y-2">
