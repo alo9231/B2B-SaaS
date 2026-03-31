@@ -1,3 +1,5 @@
+//전역 설정 (Provider, Toast, Wrapper)
+
 import "./globals.css";
 import type { Metadata } from "next";
 import ReactQueryProvider from "@/components/providers/ReactQueryProvider";

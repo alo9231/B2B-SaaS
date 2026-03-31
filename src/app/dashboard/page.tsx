@@ -143,10 +143,17 @@ export default function DashboardPage() {
   const toggleStatus = async (post: Post) => {
     const statusOrder: ('Active' | 'Pending' | 'Closed')[] = ['Active', 'Pending', 'Closed'];
     const nextStatus = statusOrder[(statusOrder.indexOf(post.status || 'Active') + 1) % 3];
-    const { error } = await supabase.from('posts').update({ status : nextStatus }).eq('id', post.id);
+    
+    const { error } = await supabase
+      .from('posts')
+      .update({ status : nextStatus })
+      .eq('id', post.id);
+
     if(!error) {
         getPosts();
-        toast.success(`상태가 ${nextStatus}로 변경되었습니다.`);
+        // ✅ getStatusStyle 함수를 사용해 한글 레이블(활성, 대기, 종료)을 가져옵니다.
+        const statusLabel = getStatusStyle(nextStatus).label;
+        toast.success(`상태가 "${statusLabel} 상태" 로 변경되었습니다.😊`);
     }
   }
 
