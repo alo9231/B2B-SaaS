@@ -237,7 +237,7 @@ export default function DashboardPage() {
                       상태
                       {sortConfig.key === 'status' ? (
                         sortConfig.direction === 'asc' ? <ChevronUp size={14} /> : <ChevronDown size={14} />
-                      ) : <ArrowUpDown size={12} className="text-gray-300" />}
+                      ) : <ArrowUpDown size={12} className="text-gray-900" />}
                     </div>
                   </th>              
                   <th 
@@ -248,7 +248,7 @@ export default function DashboardPage() {
                       제목
                       {sortConfig.key === 'title' ? (
                         sortConfig.direction === 'asc' ? <ChevronUp size={14} /> : <ChevronDown size={14} />
-                      ) : <ArrowUpDown size={12} className="text-gray-300" />}
+                      ) : <ArrowUpDown size={12} className="text-gray-900" />}
                     </div>
                   </th>          
                   <th 
@@ -259,7 +259,7 @@ export default function DashboardPage() {
                       생성일
                       {sortConfig.key === 'created_at' ? (
                         sortConfig.direction === 'asc' ? <ChevronUp size={14} /> : <ChevronDown size={14} />
-                      ) : <ArrowUpDown size={12} className="text-gray-300" />}
+                      ) : <ArrowUpDown size={12} className="text-gray-900" />}
                     </div>
                   </th>
                   <th className="p-4 border-b text-center whitespace-nowrap">관리</th>
