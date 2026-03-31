@@ -1,5 +1,7 @@
 'use client';
 
+//(React Query, Recoil, Redux 등)의 설정을 담은 컴포넌트들
+
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useState } from 'react';
 

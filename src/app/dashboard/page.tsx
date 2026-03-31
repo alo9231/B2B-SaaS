@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import { supabase } from "@/lib/supabase";
 import { useRouter } from 'next/navigation';
 import useModalStore from '@/store/useModalStore';
-import PostsDetailModal from '@/components/dashboard/PostsDetailModal';
+import PostsDetailModal from './PostsDetailModal';
 // 1. react-hot-toast 임포트 확인
 import { toast } from 'react-hot-toast';
 
