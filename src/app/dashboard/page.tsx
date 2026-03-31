@@ -5,6 +5,7 @@ import { supabase } from "@/lib/supabase";
 import { useRouter } from 'next/navigation';
 import useModalStore from '@/store/useModalStore';
 import PostsDetailModal from './PostsDetailModal';
+import { ChevronUp, ChevronDown, ArrowUpDown } from 'lucide-react';
 // 1. react-hot-toast 임포트 확인
 import { toast } from 'react-hot-toast';
 
@@ -25,6 +26,13 @@ export default function DashboardPage() {
   const [newPostTitle, setNewPostTitle] = useState(''); // 새글 등록
   const router = useRouter(); 
   const openModal = useModalStore((state) => state.openModal);
+
+  // 숫자가 작을수록 상단에 노출됨
+  const STATUS_PRIORITY = {
+    Active: 1, // 1. 활성 
+    Pending: 2, // 2.대기
+    Closed: 3, // 3.종료
+  };
 
   const [sortConfig, setSortConfig] = useState<{key: keyof Post; direction: 'asc' | 'desc' }>({
     key : 'id',
@@ -98,8 +106,15 @@ export default function DashboardPage() {
   )
 
   const sortedPosts = [...filteredPosts].sort((a, b) => {
-    const aValue = a[sortConfig.key] ?? '';
-    const bValue = b[sortConfig.key] ?? '';
+    let aValue = a[sortConfig.key] ?? '';
+    let bValue = b[sortConfig.key] ?? '';
+
+    // ✅ 상태(status) 정렬일 경우 가중치 숫자로 변환
+    if (sortConfig.key === 'status') {
+      aValue = STATUS_PRIORITY[a[sortConfig.key] as keyof typeof STATUS_PRIORITY] || 99;
+      bValue = STATUS_PRIORITY[b[sortConfig.key] as keyof typeof STATUS_PRIORITY] || 99;
+    }
+    
     if (aValue < bValue) return sortConfig.direction === 'asc' ? -1 : 1;
     if (aValue > bValue) return sortConfig.direction === 'asc' ? 1 : -1;
     return 0;
@@ -213,18 +228,48 @@ export default function DashboardPage() {
             <table className="w-full text-left border-collapse">
               <thead className="bg-gray-50 text-gray-500 text-xs uppercase font-bold">
                 <tr>
-                  <th className="p-4 border-b hidden  whitespace-nowrap">ID</th>
-                  <th className="p-4 border-b whitespace-nowrap">상태</th>
-                  <th className="p-4 border-b whitespace-nowrap">제목</th>          
-                  <th className="p-4 border-b hidden  whitespace-nowrap">생성일</th>
-                  <th className="p-4 border-b whitespace-nowrap">관리</th>
+                  <th className="p-4 border-b text-center whitespace-nowrap">ID</th>
+                  <th 
+                    className="p-4 border-b text-center whitespace-nowrap cursor-pointer hover:text-indigo-600 transition-colors w-24"
+                    onClick={() => requestSort('status')} // ✅ 클릭 시 상태 정렬 요청
+                  >
+                    <div className="flex items-center justify-center gap-1">
+                      상태
+                      {sortConfig.key === 'status' ? (
+                        sortConfig.direction === 'asc' ? <ChevronUp size={14} /> : <ChevronDown size={14} />
+                      ) : <ArrowUpDown size={12} className="text-gray-300" />}
+                    </div>
+                  </th>              
+                  <th 
+                    className="p-4 border-b whitespace-nowrap cursor-pointer hover:text-indigo-600 transition-colors"
+                    onClick={() => requestSort('title')}
+                  >
+                    <div className="flex items-center gap-1">
+                      제목
+                      {sortConfig.key === 'title' ? (
+                        sortConfig.direction === 'asc' ? <ChevronUp size={14} /> : <ChevronDown size={14} />
+                      ) : <ArrowUpDown size={12} className="text-gray-300" />}
+                    </div>
+                  </th>          
+                  <th 
+                    className="p-4 border-b text-center whitespace-nowrap cursor-pointer hover:text-indigo-600 transition-colors"
+                    onClick={() => requestSort('created_at')}
+                  >
+                    <div className="flex items-center gap-1">
+                      생성일
+                      {sortConfig.key === 'created_at' ? (
+                        sortConfig.direction === 'asc' ? <ChevronUp size={14} /> : <ChevronDown size={14} />
+                      ) : <ArrowUpDown size={12} className="text-gray-300" />}
+                    </div>
+                  </th>
+                  <th className="p-4 border-b text-center whitespace-nowrap">관리</th>
                 </tr>
               </thead>
               <tbody>
                 {sortedPosts.map((post) => (
                   <tr key={post.id} className="hover:bg-indigo-50/30 cursor-pointer transition-colors" onClick={() => openModal(post.id)}>
-                    <td className="p-4 hidden  whitespace-nowrap">{post.id}</td>
-                    <td className="p-4 whitespace-nowrap">
+                    <td className="p-4 text-center whitespace-nowrap">{post.id}</td>
+                    <td className="p-4 text-center whitespace-nowrap">
                       <span 
                           onClick={(e) => { e.stopPropagation(); toggleStatus(post); }} 
                           // ✅ whitespace-nowrap과 min-w-[50px] (또는 w-fit) 추가
@@ -243,7 +288,7 @@ export default function DashboardPage() {
                         </div>
                       )}
                     </td>
-                    <td className="p-4 text-gray-500 text-sm hidden ">
+                    <td className="p-4 text-gray-500 text-sm ">
                       {new Date(post.created_at).toLocaleDateString()}
                     </td>
                     <td className="p-4 whitespace-nowrap text-center" onClick={(e)=>e.stopPropagation()}>
