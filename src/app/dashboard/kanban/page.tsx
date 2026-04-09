@@ -7,7 +7,7 @@ import { DndContext, closestCorners, DragEndEvent, PointerSensor, useSensor, use
 import { arrayMove, SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { toast } from 'react-hot-toast';
 import { SortTableTaskCard } from "@/components/kanban/TaskCard";
-
+import { Task } from "@/types/task";
 
 // ✅ 메인 페이지 컴포넌트
 export default function KanbanPage () { // 컴포넌트 첫 글자는 대문자여야 함!!!
