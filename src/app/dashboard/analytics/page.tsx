@@ -3,10 +3,8 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabase";
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from "recharts";
+import { PostStatus } from '@/types/post';
 
-interface PostStatus {
-  status: 'Active' | 'Pending' | 'Closed' | string;
-}
 
 export default function AnalyticsPage(){
     const [posts, setPosts] = useState<PostStatus[]>([]);  
@@ -19,11 +17,17 @@ export default function AnalyticsPage(){
         getStatsData();
     },[]);
 
-    // 차트 데이터 가공
+    
+   
+    // 💡 개수 계산 로직을 변수로 분리 (중복 방지 및 가독성)
+    const activeCount = posts.filter(p => p.status === 'Active' || !p.status).length;
+    const pendingCount = posts.filter(p => p.status === 'Pending').length;
+    const closedCount = posts.filter(p => p.status === 'Closed').length;
+
     const chartData = [
-        { name: '활성(Active)', value: posts.filter(p => p.status === 'Active' || !p.status).length, fill: '#10B981' },
-        { name: '대기(Pending)', value: posts.filter(p => p.status === 'Pending').length, fill: '#FBBF24' },
-        { name: '종료(Closed)', value: posts.filter(p => p.status === 'Closed').length, fill: '#94A3B8' },
+        { name: '활성(Active)', value: activeCount, fill: '#10B981' },
+        { name: '대기(Pending)', value: pendingCount, fill: '#FBBF24' },
+        { name: '종료(Closed)', value: closedCount, fill: '#94A3B8' },
     ];
 
     return(
@@ -56,12 +60,34 @@ export default function AnalyticsPage(){
                         </div>
                 </div>
 
-                {/* 요약 카드 영역 */}
-                <div className="space-y-4">
-                    <div className="bg-indigo-600 text-white p-6 rounded-2xl shadow-md">
-                        <p className="opacity-80">전체 게시글 수</p>
-                        <p className="text-4xl font-bold">{posts.length}개</p>
+                {/* 요약 카드 영역  (전체/활성/대기/종료) */}
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+
+                    {/* 전체 - 인디고 */}
+                    <div className="bg-indigo-600 text-white p-6 rounded-2xl shadow-md sm:col-span-3 transition-transform hover:scale-[1.005]">
+                        <p className="opacity-80 text-sm font-medium">전체 게시글 수</p>
+                        <p className="text-4xl font-bold">{posts.length} <span className="text-xl font-normal opacity-70">개</span></p>
                     </div>
+                    
+                    {/* 활성 - 에메랄드 (Chart: #10B981) */}
+                    <div className="bg-emerald-500 text-white p-6 rounded-2xl shadow-md transition-transform hover:scale-[1.01] md:col-span-3 lg:col-span-1">
+                        <p className="opacity-80 text-sm font-medium">활성(Active)</p>
+                        <p className="text-3xl font-bold">{activeCount} <span className="text-lg font-normal opacity-70">개</span></p>
+                    </div>
+
+                    {/* 대기 - 앰버 (Chart: #FBBF24) */}
+                    <div className="bg-amber-400 text-white p-6 rounded-2xl shadow-md transition-transform hover:scale-[1.01] md:col-span-3 lg:col-span-1">
+                        <p className="opacity-80 text-sm font-medium">대기(Pending)</p>
+                        <p className="text-3xl font-bold">{pendingCount} <span className="text-lg font-normal opacity-70">개</span></p>
+                    </div>
+
+                    {/* 종료 - 슬레이트 (Chart: #94A3B8) */}
+                    <div className="bg-slate-400 text-white p-6 rounded-2xl shadow-md transition-transform hover:scale-[1.01] md:col-span-3 lg:col-span-1">
+                        <p className="opacity-80 text-sm font-medium">종료(Closed)</p>
+                        <p className="text-3xl font-bold">{closedCount} <span className="text-lg font-normal opacity-70">개</span></p>
+                    </div>
+
+
                     {/* 추가적인 통계 카드들 여기에 배치! */}
                 </div>
             </div>

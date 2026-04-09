@@ -1,11 +1,5 @@
 import { create } from 'zustand';
-
-interface ModalState {
-    isOpen : boolean;
-    selectedPostId: number | null; // number 타입 확인!
-    openModal: (id: number) => void;
-    closeModal: () => void;
-}
+import { ModalState } from '@/types/modal'; // 모달 타입 정의
 
 export const useModalStore = create<ModalState>((set) => ({
   isOpen: false,

@@ -8,14 +8,8 @@ import PostsDetailModal from '@/components/dashboard/PostsDetailModal';
 import { ChevronUp, ChevronDown, ArrowUpDown } from 'lucide-react';
 // 1. react-hot-toast 임포트 확인
 import { toast } from 'react-hot-toast';
+import { Post } from '@/types/post';
 
-interface Post {
-  id: number;
-  title: string;
-  created_at: string;
-  status?: 'Active' | 'Pending' | 'Closed';
-  commentCount?: number;
-}
 
 export default function DashboardPage() {
   const [posts, setPosts] = useState<Post[]>([])
